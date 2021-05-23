@@ -1,0 +1,23 @@
+version: "3"
+services:
+  api:
+    image: api
+    build: .
+    networks:
+      - backend
+    ports:
+      - "5000:5000"
+
+  database:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_DATABASE:toptaldb
+    #   - "MONGO_INITDB_ROOT_USERNAME": 'root'
+    #   - MONGO_INITDB_ROOT_PASSWORD: "root"
+    volumes:
+      - "./mongodata:/data/db"
+    ports:
+      - 27017:27017
+networks:
+  backend:
+    driver: bridge
