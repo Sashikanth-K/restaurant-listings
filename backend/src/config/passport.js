@@ -4,6 +4,7 @@ const httpStatus = require("http-status");
 
 const { userService } = require("../services");
 const ApiError = require("../utils/ApiError");
+const config = require("../config/config");
 
 passport.serializeUser(function (user, done) {
   done(null, user);
@@ -26,6 +27,12 @@ const verifyLogin = async (email, password, done) => {
       throw new ApiError(
         httpStatus.UNAUTHORIZED,
         "Incorrect email or password"
+      );
+    }
+    if (!user.isEmailVerified) {
+      throw new ApiError(
+        httpStatus.UNAUTHORIZED,
+        `Email not verified. Verify email inorder to login. <a href='${config.frontEndHost}/send-email-verification'>Resend Email Verification</a>`
       );
     }
     return done(null, user);
