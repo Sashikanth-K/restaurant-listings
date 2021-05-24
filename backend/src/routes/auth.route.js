@@ -9,7 +9,7 @@ const router = express.Router();
 router.post(
   "/register",
   validate(authValidation.register),
-  passport.authenticate("local.register"),
+  //passport.authenticate("local.register"),
   authController.register
 );
 router.post(
@@ -19,5 +19,15 @@ router.post(
   authController.login
 );
 router.post("/logout", validate(authValidation.logout), authController.logout);
+router.get(
+  "/send-verification-email",
+  validate(authValidation.sendEmailVerification),
+  authController.sendVerificationEmail
+);
+router.get(
+  "/verify-email",
+  validate(authValidation.verifyEmail),
+  authController.verifyEmail
+);
 
 module.exports = router;

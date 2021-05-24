@@ -22,9 +22,22 @@ const logout = {
     refreshToken: Joi.string().required(),
   }),
 };
+const verifyEmail = {
+  query: Joi.object().keys({
+    token: Joi.string().required(),
+  }),
+};
+
+const sendEmailVerification = {
+  query: Joi.object().keys({
+    email: Joi.string().required().email(),
+  }),
+};
 
 module.exports = {
   register,
   login,
   logout,
+  verifyEmail,
+  sendEmailVerification
 };

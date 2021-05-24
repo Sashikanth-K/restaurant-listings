@@ -6,7 +6,15 @@ const envVarsSchema = Joi.object()
       .valid("production", "development", "test")
       .required(),
     PORT: Joi.number().default(5000),
+    FRONT_END_HOST: Joi.string(),
     MONGODB_URL: Joi.string().required().description("Mongo DB url"),
+    SMTP_HOST: Joi.string().description("server that will send the emails"),
+    SMTP_PORT: Joi.number().description("port to connect to the email server"),
+    SMTP_USERNAME: Joi.string().description("username for email server"),
+    SMTP_PASSWORD: Joi.string().description("password for email server"),
+    EMAIL_FROM: Joi.string().description(
+      "the from field in the emails sent by the app"
+    ),
   })
   .unknown();
 
@@ -21,6 +29,7 @@ if (error) {
 module.exports = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
+  frontEndHost: envVars.FRONT_END_HOST,
   mongoose: {
     url: envVars.MONGODB_URL + (envVars.NODE_ENV === "test" ? "-test" : ""),
     options: {
@@ -28,5 +37,20 @@ module.exports = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     },
+  },
+  jwt: {
+    secret: envVars.JWT_SECRET,
+    verifyEmailExpirationMinutes: envVars.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES,
+  },
+  email: {
+    smtp: {
+      host: envVars.SMTP_HOST,
+      port: envVars.SMTP_PORT,
+      auth: {
+        user: envVars.SMTP_USERNAME,
+        pass: envVars.SMTP_PASSWORD,
+      },
+    },
+    from: envVars.EMAIL_FROM,
   },
 };

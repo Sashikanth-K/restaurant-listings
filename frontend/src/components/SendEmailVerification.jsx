@@ -1,21 +1,25 @@
 import React, { useContext, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import { FormControlLabel, Radio } from "@material-ui/core";
+import CssBaseline from "@material-ui/core/CssBaseline";
+
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { RadioGroup } from "formik-material-ui";
-import { Formik, Form, Field } from "formik";
-import { TextField } from "formik-material-ui";
+import axios from "axios";
 import { useHistory } from "react-router-dom";
+
+import { Formik, Form, Field } from "formik";
+
+import { TextField } from "formik-material-ui";
+
 import { UserContext } from "../UserProvider";
 import MessageCard from "./MessageCard";
-import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -37,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Register() {
+export default function SendEmailVerification() {
   const userContext = useContext(UserContext);
   const classes = useStyles();
   const history = useHistory();
@@ -56,19 +60,16 @@ export default function Register() {
             level={level}
           />
         ) : null}
-        <Avatar className={classes.avatar}>
+        {/* <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
-        </Avatar>
+        </Avatar> */}
         <Typography component="h1" variant="h5">
-          Register
+          Send Email Verification
         </Typography>
         <div className={classes.form}>
           <Formik
             initialValues={{
               email: "",
-              password: "",
-              name: "",
-              role: "",
             }}
             validate={(values) => {
               const errors = {};
@@ -80,25 +81,13 @@ export default function Register() {
                 errors.email = "Invalid email address";
               }
 
-              if (!values.password) {
-                errors.password = "Required";
-              } else if (
-                !(
-                  values.password.match(/[a-z]/g) &&
-                  values.password.match(/[A-Z]/g) &&
-                  values.password.match(/[0-9]/g) &&
-                  values.password.match(/[^a-zA-Z\d]/g) &&
-                  values.password.length >= 8
-                )
-              ) {
-                errors.password =
-                  "Password must be minimum length 8. One uppercas, One lowercase, One digit.";
-              }
               return errors;
             }}
             onSubmit={async (values, { setSubmitting }) => {
               try {
-                let response = await axios.post("/auth/register", values);
+                let response = await axios.get(
+                  "/auth/send-verification-email?email=" + values.email
+                );
                 if (response && response.data) {
                   if (response.data.message) {
                     setMessage(response.data.message);
@@ -107,7 +96,6 @@ export default function Register() {
                 }
                 setSubmitting(false);
               } catch (error) {
-                setSubmitting(false);
                 if (error.response) {
                   // Request made and server responded
                   console.log(error.response.data);
@@ -116,29 +104,19 @@ export default function Register() {
                 } else if (error.request) {
                   // The request was made but no response was received
                   console.log(error.request);
-                  //setMessage(error.request);
-                  //setLevel("secondary");
+                  setLevel("secondary");
                 } else {
                   // Something happened in setting up the request that triggered an Error
                   console.log("Error", error.message);
-                  setMessage(error.message);
                   setLevel("secondary");
                 }
               }
+
+              setSubmitting(false);
             }}
           >
             {({ submitForm, isSubmitting }) => (
               <Form>
-                <Field
-                  component={TextField}
-                  name="name"
-                  //type="name"
-                  fullWidth
-                  label="Name"
-                  variant="outlined"
-                />
-                <br />
-                <br />
                 <Field
                   component={TextField}
                   name="email"
@@ -149,43 +127,9 @@ export default function Register() {
                 />
                 <br />
                 <br />
-                <Field
-                  component={TextField}
-                  type="password"
-                  label="Password"
-                  fullWidth
-                  name="password"
-                  variant="outlined"
-                />
-                <br />
-                <br />
-                <Field component={RadioGroup} name="role">
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    component="p"
-                  >
-                    Register as :
-                  </Typography>
-                  <FormControlLabel
-                    value="user"
-                    control={<Radio disabled={isSubmitting} />}
-                    label="Regular user"
-                    disabled={isSubmitting}
-                  />
-                  <FormControlLabel
-                    value="realtor"
-                    control={<Radio disabled={isSubmitting} />}
-                    label="Realtor"
-                    disabled={isSubmitting}
-                  />
-                </Field>
-
-                <br />
                 {isSubmitting && <LinearProgress />}
                 <br />
                 <br />
-
                 <Button
                   variant="contained"
                   color="primary"
@@ -193,7 +137,7 @@ export default function Register() {
                   onClick={submitForm}
                   fullWidth
                 >
-                  Register
+                  Send
                 </Button>
               </Form>
             )}
@@ -202,8 +146,8 @@ export default function Register() {
 
         <Grid container>
           <Grid item>
-            <Link href="/login" variant="body2">
-              {"Already have an account? Login"}
+            <Link href="/register" variant="body2">
+              {"Don't have an account? Sign Up"}
             </Link>
           </Grid>
         </Grid>

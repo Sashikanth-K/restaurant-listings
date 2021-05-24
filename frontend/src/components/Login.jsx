@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
-
 
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
@@ -20,6 +19,7 @@ import { Formik, Form, Field } from "formik";
 import { TextField } from "formik-material-ui";
 
 import { UserContext } from "../UserProvider";
+import MessageCard from "./MessageCard";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -45,10 +45,21 @@ export default function Login() {
   const userContext = useContext(UserContext);
   const classes = useStyles();
   const history = useHistory();
+  const [message, setMessage] = useState(null);
+  const [level, setLevel] = useState("primary");
 
   return (
     <Container component="main" maxWidth="xs">
       <div className={classes.paper}>
+        {message ? (
+          <MessageCard
+            content={message}
+            handleDelete={() => {
+              setMessage(null);
+            }}
+            level={level}
+          />
+        ) : null}
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -88,11 +99,31 @@ export default function Login() {
               return errors;
             }}
             onSubmit={async (values, { setSubmitting }) => {
-              let user = await axios.post("/auth/login", values);
-              if (user && user.data) {
-                userContext.setDataInLocalStorage(user.data);
-                history.push("/");
+              try {
+                let user = await axios.post("/auth/login", values);
+                if (user && user.data) {
+                  userContext.setDataInLocalStorage(user.data);
+                  history.push("/");
+                }
+              } catch (error) {
+                if (error.response) {
+                  // Request made and server responded
+                  console.log(error.response.data);
+                  setMessage(error.response.data.message);
+                  setLevel("secondary");
+                } else if (error.request) {
+                  // The request was made but no response was received
+                  console.log(error.request);
+                  setMessage(error.request);
+                  setLevel("secondary");
+                } else {
+                  // Something happened in setting up the request that triggered an Error
+                  console.log("Error", error.message);
+                  setMessage(error.message);
+                  setLevel("secondary");
+                }
               }
+
               setSubmitting(false);
             }}
           >
