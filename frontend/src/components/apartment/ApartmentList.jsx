@@ -16,9 +16,11 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { Formik, Form, Field } from "formik";
 import { TextField } from "formik-material-ui";
 import Pagination from "@material-ui/lab/Pagination";
+
 import { TextField as MuTextField } from "@material-ui/core";
 import ApartmentCard from "./ApartmentCard";
 import Skeleton from "@material-ui/lab/Skeleton";
+import GeoLocationList from "../GeoLocationList";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +54,8 @@ const ApartmentList = () => {
   const [floorArea, setFloorArea] = useState("");
   const [price, setPrice] = useState("");
   const [numberOfRooms, setNumberOfRooms] = useState("");
+
+  const [isList, setIsList] = useState(true);
 
   const getRestaurants = async () => {
     try {
@@ -152,22 +156,57 @@ const ApartmentList = () => {
         </Grid>
 
         <Grid item>
-          <Grid container justify="flex-end" spacing={2} alignItems="baseline">
+          <Grid
+            container
+            justify="space-between"
+            spacing={2}
+            alignItems="baseline"
+          >
             <Grid item>
-              <Typography variant="caption" display="block" gutterBottom>
-                {(page - 1) * 20 + 1} - {page * 20} of {totalResults}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Pagination
-                page={page}
-                count={totalPages}
-                onChange={onChange}
+              <ButtonGroup
+                disableElevation
+                variant="outlined"
+                color="default"
                 size="small"
-                boundaryCount={2}
-                shape="rounded"
-                color="primary"
-              />
+              >
+                <Button
+                  variant={isList ? "contained" : "outlined"}
+                  onClick={(e) => {
+                    setIsList(true);
+                  }}
+                >
+                  List
+                </Button>
+                <Button
+                  variant={!isList ? "contained" : "outlined"}
+                  onClick={(e) => {
+                    setIsList(false);
+                  }}
+                >
+                  Map
+                </Button>
+              </ButtonGroup>
+            </Grid>
+
+            <Grid item>
+              <Grid container justify="flex-end" alignItems="baseline">
+                <Grid item>
+                  <Typography variant="caption" display="block" gutterBottom>
+                    {(page - 1) * 20 + 1} - {page * 20} of {totalResults}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Pagination
+                    page={page}
+                    count={totalPages}
+                    onChange={onChange}
+                    size="small"
+                    boundaryCount={2}
+                    shape="rounded"
+                    color="primary"
+                  />
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
@@ -179,45 +218,25 @@ const ApartmentList = () => {
             justify="space-between"
             spacing={2}
           >
-            {isLoading ? (
-              <ApartmentCardSkelton></ApartmentCardSkelton>
+            {isList ? (
+              <React.Fragment>
+                {isLoading ? (
+                  <ApartmentCardSkelton></ApartmentCardSkelton>
+                ) : (
+                  <React.Fragment>
+                    {restaurantList.map((item) => {
+                      return (
+                        <Grid item key={item.id}>
+                          <ApartmentCard data={item} />
+                        </Grid>
+                      );
+                    })}
+                  </React.Fragment>
+                )}
+              </React.Fragment>
             ) : (
               <React.Fragment>
-                {restaurantList.map((item) => {
-                  return (
-                    <Grid item key={item.id}>
-                      <ApartmentCard data={item} />
-                    </Grid>
-                  );
-                })}
-                {restaurantList.map((item) => {
-                  return (
-                    <Grid item key={item.id}>
-                      <ApartmentCard data={item} />
-                    </Grid>
-                  );
-                })}
-                {restaurantList.map((item) => {
-                  return (
-                    <Grid item key={item.id}>
-                      <ApartmentCard data={item} />
-                    </Grid>
-                  );
-                })}
-                {restaurantList.map((item) => {
-                  return (
-                    <Grid item key={item.id}>
-                      <ApartmentCard data={item} />
-                    </Grid>
-                  );
-                })}
-                {restaurantList.map((item) => {
-                  return (
-                    <Grid item key={item.id}>
-                      <ApartmentCard data={item} />
-                    </Grid>
-                  );
-                })}
+                <GeoLocationList markers={restaurantList} />
               </React.Fragment>
             )}
           </Grid>

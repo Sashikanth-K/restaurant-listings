@@ -9,6 +9,8 @@ const createApartment = {
     floorArea: Joi.number(),
     numberOfRooms: Joi.number(),
     price: Joi.number(),
+    lat: Joi.number().required(),
+    lng: Joi.number().required(),
   }),
 };
 
@@ -44,6 +46,8 @@ const updateApartment = {
       realtorId: Joi.string().custom(objectId),
       price: Joi.number(),
       isRented: Joi.boolean(),
+      lat: Joi.number(),
+      lng: Joi.number(),
     })
     .min(1),
 };

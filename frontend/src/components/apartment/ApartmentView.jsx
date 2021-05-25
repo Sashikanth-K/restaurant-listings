@@ -124,24 +124,40 @@ const ApartmentView = () => {
           {userContext.userInfo && userContext.userInfo.role != "user" ? (
             <Grid item>
               <Grid container justify="flex-end" spacing={1}>
-                <Button
-                  variant="outlined"
-                  disabled={isEditing}
-                  color="primary"
-                  onClick={() => {
-                    setIsEditing(true);
-                  }}
-                >
-                  Edit
-                </Button>
-                <Button
-                  color="secondary"
-                  onClick={(e) => {
-                    setIsDeleteDialogOpen(true);
-                  }}
-                >
-                  Delete
-                </Button>
+                {isEditing ? (
+                  <Button
+                    variant="outlined"
+                    //disabled={isEditing}
+                    color="primary"
+                    onClick={() => {
+                      setIsEditing(false);
+                    }}
+                  >
+                    Back
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outlined"
+                    disabled={isEditing}
+                    color="primary"
+                    onClick={() => {
+                      setIsEditing(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                )}
+
+                {!isEditing && (
+                  <Button
+                    color="secondary"
+                    onClick={(e) => {
+                      setIsDeleteDialogOpen(true);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                )}
               </Grid>
             </Grid>
           ) : null}
