@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import { FormControlLabel, Radio } from "@material-ui/core";
@@ -11,7 +11,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { RadioGroup } from "formik-material-ui";
 import { Formik, Form, Field } from "formik";
-import { TextField } from "formik-material-ui";
+import { TextField, Select } from "formik-material-ui";
+import MenuItem from "@material-ui/core/MenuItem";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
 import { useHistory } from "react-router-dom";
 import { UserContext } from "../../UserProvider";
 import MessageCard from "../MessageCard";
@@ -34,6 +37,10 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 240,
+  },
 }));
 
 const center = {
@@ -48,12 +55,51 @@ export default function ApartmentForm() {
   const [message, setMessage] = useState(null);
   const [level, setLevel] = useState("primary");
 
+  const [userList, setUserList] = useState([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [page, setPage] = useState(1);
+
   const [markers, setMarkers] = React.useState([
     {
       lat: center.lat,
       lng: center.lng,
     },
   ]);
+
+  const getRealtorUsers = async () => {
+    try {
+      const params = {
+        role: "realtor",
+        limit: 10000,
+      };
+
+      //setIsLoading(true);
+      let data = await axios.get("/users", {
+        params: params,
+        headers: { "Content-type": "application/json" },
+        withCredentials: true,
+      });
+
+      //setIsLoading(false);
+      if (data && data.data && data.data.results) {
+        setUserList(data.data.results);
+        setTotalResults(data.data.totalResults);
+        setPage(data.data.page);
+        setTotalPages(data.data.totalPages);
+      } else {
+        //setErrorMessage(data.data.message);
+        setUserList([]);
+      }
+    } catch (error) {
+      // setIsLoading(false);
+      // setErrorMessage(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getRealtorUsers();
+  }, []);
 
   return (
     <Container component="main" maxWidth="md">
@@ -78,7 +124,7 @@ export default function ApartmentForm() {
               floorArea: "",
               numberOfRooms: "",
               price: "",
-              //realtorId : "",
+              realtorId: "",
             }}
             validationSchema={Yup.object({
               name: Yup.string()
@@ -99,13 +145,16 @@ export default function ApartmentForm() {
             onSubmit={async (values, { setSubmitting }) => {
               try {
                 setMessage(null);
-                values.realtorId = userContext.userInfo.id;
+                if (userContext.userInfo.role != "admin") {
+                  values.realtorId = userContext.userInfo.id;
+                }
+
                 values.lng = markers[0].lng;
                 values.lat = markers[0].lat;
 
-                console.log('====================================');
+                console.log("====================================");
                 console.log(markers[0], values);
-                console.log('====================================');
+                console.log("====================================");
                 let response = await axios.post("/apartments", values);
                 if (response && response.data) {
                   if (response.data.id) {
@@ -179,6 +228,35 @@ export default function ApartmentForm() {
                   name="price"
                   variant="outlined"
                 />
+                <br />
+                <br />
+
+                {userContext &&
+                userContext.userInfo &&
+                userContext.userInfo.role == "admin" ? (
+                  <FormControl className={classes.formControl}>
+                    <InputLabel shrink id="demo-simple-select-placeholde">
+                      {" "}
+                      Associated Realtor
+                    </InputLabel>
+                    <Field
+                      labelId="demo-simple-select-placeholde"
+                      id="demo-simple-select-placeholde"
+                      fullWidth
+                      component={Select}
+                      variant="outlined"
+                      name="realtorId"
+                      // inputProps={{
+                      //   id: "age-simple",
+                      // }}
+                    >
+                      {userList.map((item) => {
+                        return <MenuItem value={item.id}>{item.name}</MenuItem>;
+                      })}
+                    </Field>
+                  </FormControl>
+                ) : null}
+
                 <br />
                 <br />
                 <Field

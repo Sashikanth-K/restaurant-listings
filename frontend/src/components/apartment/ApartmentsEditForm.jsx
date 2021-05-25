@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import { FormControlLabel, Radio } from "@material-ui/core";
@@ -52,6 +52,11 @@ export default function ApartmentEditForm(props) {
   const [message, setMessage] = useState(null);
   const [level, setLevel] = useState("primary");
 
+  const [userList, setUserList] = useState([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [page, setPage] = useState(1);
+
   const [markers, setMarkers] = React.useState([
     {
       lat: props.data.location.coordinates[1],
@@ -63,6 +68,40 @@ export default function ApartmentEditForm(props) {
     lat: props.data.location.coordinates[1],
     lng: props.data.location.coordinates[0],
   };
+
+  const getRealtorUsers = async () => {
+    try {
+      const params = {
+        role: "realtor",
+        limit: 10000,
+      };
+
+      //setIsLoading(true);
+      let data = await axios.get("/users", {
+        params: params,
+        headers: { "Content-type": "application/json" },
+        withCredentials: true,
+      });
+
+      //setIsLoading(false);
+      if (data && data.data && data.data.results) {
+        setUserList(data.data.results);
+        setTotalResults(data.data.totalResults);
+        setPage(data.data.page);
+        setTotalPages(data.data.totalPages);
+      } else {
+        //setErrorMessage(data.data.message);
+        setUserList([]);
+      }
+    } catch (error) {
+      // setIsLoading(false);
+      // setErrorMessage(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getRealtorUsers();
+  }, []);
 
   return (
     <Container component="main" maxWidth="md">
@@ -88,6 +127,7 @@ export default function ApartmentEditForm(props) {
               numberOfRooms: props.data.numberOfRooms,
               price: props.data.price,
               isRented: props.data.isRented,
+              realtorId: props.data.realtorId,
             }}
             validationSchema={Yup.object({
               name: Yup.string()
@@ -108,7 +148,7 @@ export default function ApartmentEditForm(props) {
             onSubmit={async (values, { setSubmitting }) => {
               try {
                 setMessage(null);
-                values.realtorId = userContext.userInfo.id;
+                //values.realtorId = userContext.userInfo.id;
                 values.lng = markers[0].lng;
                 values.lat = markers[0].lat;
                 let response = await axios.patch(
@@ -216,27 +256,32 @@ export default function ApartmentEditForm(props) {
                   </Field>
                 </FormControl>
 
-                {/* <Field component={RadioGroup} name="isRented">
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    component="p"
-                  >
-                    Availablity :
-                  </Typography>
-                  <FormControlLabel
-                    value={true}
-                    control={<Radio disabled={isSubmitting} />}
-                    label="Rented"
-                    disabled={isSubmitting}
-                  />
-                  <FormControlLabel
-                    value={false}
-                    control={<Radio disabled={isSubmitting} />}
-                    label="Not Rented"
-                    disabled={isSubmitting}
-                  />
-                </Field> */}
+                {userContext &&
+                userContext.userInfo &&
+                userContext.userInfo.role == "admin" ? (
+                  <FormControl className={classes.formControl}>
+                    <InputLabel shrink id="demo-simple-select-placeholde">
+                      {" "}
+                      Associated Realtor
+                    </InputLabel>
+                    <Field
+                      labelId="demo-simple-select-placeholde"
+                      id="demo-simple-select-placeholde"
+                      fullWidth
+                      component={Select}
+                      variant="outlined"
+                      name="realtorId"
+                      // inputProps={{
+                      //   id: "age-simple",
+                      // }}
+                    >
+                      {userList.map((item) => {
+                        return <MenuItem value={item.id}>{item.name}</MenuItem>;
+                      })}
+                    </Field>
+                  </FormControl>
+                ) : null}
+
                 <br />
                 <br />
                 <Field

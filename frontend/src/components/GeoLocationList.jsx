@@ -65,7 +65,7 @@ export default function GeoLocationList(props) {
       <GoogleMap
         id="map"
         mapContainerStyle={mapContainerStyle}
-        zoom={8}
+        zoom={6}
         center={center}
         options={options}
         onLoad={onMapLoad}
