@@ -1,5 +1,5 @@
 const httpStatus = require("http-status");
-const { User, Restaurant, Review } = require("../models");
+const { User, Apartment } = require("../models");
 const ApiError = require("../utils/ApiError");
 
 const createUser = async (userBody) => {
@@ -44,19 +44,12 @@ const deleteUserById = async (userId) => {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
 
-  const restaurants = await Restaurant.find({
-    ownerId: userId,
+  const apartments = await Apartment.find({
+    realtorId: userId,
   });
 
-  for (let i = 0; i < restaurants.length; i++) {
-    const res = restaurants[i];
-    await Review.deleteMany({
-      restaurantId: res.id,
-    });
-  }
-
-  await Restaurant.deleteMany({
-    ownerId: userId,
+  await Apartment.deleteMany({
+    realtorId: userId,
   });
   await user.remove();
   return user;

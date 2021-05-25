@@ -16,6 +16,7 @@ roleRights.set(roles[2], [
   "getUsers",
   "updateUser",
   "deleteUser",
+  "createApartment",
   "getApartments",
   "getApartment",
   "updateApartment",

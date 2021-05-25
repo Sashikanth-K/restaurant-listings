@@ -19,7 +19,7 @@ function App() {
         <AuthRoute component={SendEmailVerification} path="/send-email-verification" />
 
         
-        <PrivateRoute component={Main} path="/" />
+        <PrivateRoute  component={Main} path="/" />
       </Switch>
     </div>
   );

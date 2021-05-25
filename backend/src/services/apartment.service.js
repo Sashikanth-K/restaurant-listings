@@ -12,7 +12,33 @@ const queryApartments = async (filter, options) => {
   return apartments;
 };
 
+const getApartmentById = async (id) => {
+  return Apartment.findById(id);
+};
+
+const updateApartmentById = async (apartmentId, updateBody) => {
+  const apartment = await getApartmentById(apartmentId);
+  if (!apartment) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Apartment not found");
+  }
+  Object.assign(apartment, updateBody);
+  await apartment.save();
+  return apartment;
+};
+
+const deleteApartmentById = async (apartmentId) => {
+  const apartment = await getApartmentById(apartmentId);
+  if (!apartment) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Apartment not found");
+  }
+  await apartment.remove();
+  return apartment;
+};
+
 module.exports = {
   createApartment,
   queryApartments,
+  getApartmentById,
+  updateApartmentById,
+  deleteApartmentById,
 };

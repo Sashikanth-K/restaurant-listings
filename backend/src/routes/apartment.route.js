@@ -19,4 +19,22 @@ router
     apartmentController.getApartments
   );
 
+router
+  .route("/:apartmentId")
+  .get(
+    auth("getApartment"),
+    validate(apartmentValidation.getApartment),
+    apartmentController.getApartment
+  )
+  .patch(
+    auth("updateApartment"),
+    validate(apartmentValidation.updateApartment),
+    apartmentController.updateApartment
+  )
+  .delete(
+    auth("deleteApartment"),
+    validate(apartmentValidation.deleteApartment),
+    apartmentController.deleteApartment
+  );
+
 module.exports = router;

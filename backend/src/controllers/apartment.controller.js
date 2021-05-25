@@ -20,7 +20,12 @@ const createApartment = async (req, res, next) => {
 
 const getApartments = async (req, res, next) => {
   try {
-    const filter = pick(req.query, ["ownerId"]);
+    const filter = pick(req.query, [
+      "realtorId",
+      "numberOfRooms",
+      "price",
+      "floorArea",
+    ]);
     const options = pick(req.query, ["sortBy", "limit", "page"]);
     const result = await apartmentService.queryApartments(filter, options);
     if (!result) {
@@ -32,7 +37,51 @@ const getApartments = async (req, res, next) => {
   }
 };
 
+const getApartment = async (req, res, next) => {
+  try {
+    const apartment = await apartmentService.getApartmentById(
+      req.params.apartmentId
+    );
+    if (!apartment) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Apartment not found");
+    }
+    res.send(apartment);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateApartment = async (req, res, next) => {
+  try {
+    const apartment = await apartmentService.updateApartmentById(
+      req.params.apartmentId,
+      req.body
+    );
+    if (!apartment) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "Apartment not updated"
+      );
+    }
+    res.send(apartment);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteApartment = async (req, res, next) => {
+  try {
+    await apartmentService.deleteApartmentById(req.params.apartmentId);
+    res.status(httpStatus.NO_CONTENT).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createApartment,
   getApartments,
+  getApartment,
+  updateApartment,
+  deleteApartment,
 };
