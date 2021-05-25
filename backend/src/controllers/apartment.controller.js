@@ -20,7 +20,12 @@ const createApartment = async (req, res, next) => {
 
 const getApartments = async (req, res, next) => {
   try {
-    const filter = pick(req.query, ["ownerId"]);
+    const filter = pick(req.query, [
+      "realtorId",
+      "numberOfRooms",
+      "price",
+      "floorArea",
+    ]);
     const options = pick(req.query, ["sortBy", "limit", "page"]);
     const result = await apartmentService.queryApartments(filter, options);
     if (!result) {

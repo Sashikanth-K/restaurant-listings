@@ -26,6 +26,7 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Skeleton from "@material-ui/lab/Skeleton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,7 +41,22 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary,
   },
+  accor: {
+    zIndex: 0,
+  },
 }));
+
+function UserCardSkelton() {
+  return [...Array(10)].map((_, i) => {
+    return (
+      <div>
+        <Skeleton variant="text" />
+        <Skeleton variant="text" width={120} height={80} />
+        <Skeleton variant="text" width={190} height={50} />
+      </div>
+    );
+  });
+}
 
 const UserList = () => {
   const classes = useStyles();
@@ -51,6 +67,7 @@ const UserList = () => {
   const [page, setPage] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -64,15 +81,16 @@ const UserList = () => {
       let y = role ? (params["role"] = role) : null;
       let z = email ? (params["email"] = email) : null;
 
-      //   if (userContext.userInfo && userContext.userInfo.role == "owner") {
-      //     params["ownerId"] = userContext.userInfo.id;
-      //   }
+      setIsLoading(true);
       let data = await axios.get("/users", {
         params: params,
         headers: { "Content-type": "application/json" },
         withCredentials: true,
       });
 
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000 * 1);
       if (data && data.data && data.data.results) {
         setUserList(data.data.results);
         setTotalResults(data.data.totalResults);
@@ -82,6 +100,7 @@ const UserList = () => {
         setErrorMessage(data.data.message);
       }
     } catch (error) {
+      setIsLoading(false);
       setErrorMessage(error.message);
     }
   };
@@ -252,9 +271,8 @@ const UserList = () => {
       <Grid container direction="column" spacing={2}>
         {userContext.userInfo && userContext.userInfo.role == "admin" ? (
           <Grid item>
-            <Grid container  spacing={1}>
+            <Grid container spacing={1}>
               <Button
-                
                 disabled={isDialogOpen}
                 color="primary"
                 onClick={() => {
@@ -269,8 +287,9 @@ const UserList = () => {
 
         <Grid item>
           <Accordion
-          // expanded={expanded === "panel4"}
-          // onChange={handleChange("panel4")}
+            classes={classes.accor}
+            // expanded={expanded === "panel4"}
+            // onChange={handleChange("panel4")}
           >
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
@@ -356,17 +375,29 @@ const UserList = () => {
             </Grid>
           </Grid>
         </Grid>
-        {userList.map((item) => {
-          return (
-            <React.Fragment>
-              {userContext.userInfo && userContext.userInfo.id != item.id ? (
-                <Grid item key={item.id}>
-                  <UserCard data={item} getUsers={getUsers} />
-                </Grid>
-              ) : null}
-            </React.Fragment>
-          );
-        })}
+
+        <Grid item>
+          <Grid container direction="column" spacing={0}>
+            {isLoading ? (
+              <UserCardSkelton></UserCardSkelton>
+            ) : (
+              <React.Fragment>
+                {userList.map((item) => {
+                  return (
+                    <React.Fragment>
+                      {userContext.userInfo &&
+                      userContext.userInfo.id != item.id ? (
+                        <Grid item key={item.id}>
+                          <UserCard data={item} getUsers={getUsers} />
+                        </Grid>
+                      ) : null}
+                    </React.Fragment>
+                  );
+                })}
+              </React.Fragment>
+            )}
+          </Grid>
+        </Grid>
       </Grid>
     </div>
   );

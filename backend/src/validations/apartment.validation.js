@@ -15,7 +15,10 @@ const createApartment = {
 const getApartments = {
   query: Joi.object().keys({
     name: Joi.string(),
-    ownerId: Joi.string().custom(objectId),
+    realtorId: Joi.string().custom(objectId),
+    floorArea: Joi.number(),
+    numberOfRooms: Joi.number(),
+    price: Joi.number(),
     sortBy: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
