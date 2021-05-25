@@ -10,7 +10,16 @@ import Link from "@material-ui/core/Link";
 import PrivateRoute from "./PrivateRoute";
 import AuthRoute from "./AuthRoute";
 
-import { BrowserRouter as Router, Switch, Route, Link as RouterLink } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link as RouterLink,
+} from "react-router-dom";
+import ApartmentForm from "./components/apartment/ApartmentForm";
+import ApartmentList from "./components/apartment/ApartmentList";
+import ApartmentView from "./components/apartment/ApartmentView";
+import UserList from "./components/user/UserList";
 //import RestaurantView from "./components/RestaurantView";
 //import UserList from "./components/UserList";
 
@@ -43,13 +52,13 @@ export default function StickyFooter() {
 
       <Container>
         <Switch>
-          {/* <PrivateRoute
-            component={RestaurantView}
-            path="/restaurants/:restaurantId"
+          <PrivateRoute
+            component={ApartmentView}
+            path="/apartments/:apartmentId"
           />
+          <PrivateRoute component={ApartmentForm} path="/create-apartment" />
           <PrivateRoute component={UserList} path="/users/" />
-          <PrivateRoute exact component={RestaurantList} path="/" /> */}
-          
+          <PrivateRoute exact component={ApartmentList} path="/" />
         </Switch>
       </Container>
 

@@ -7,6 +7,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 
 import RestaurantIcon from "@material-ui/icons/Restaurant";
 import {
@@ -35,6 +37,15 @@ const useStyles = makeStyles((theme) => ({
 export default function Header() {
   const classes = useStyles();
   const userContext = useContext(UserContext);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <div className={classes.root}>
@@ -46,55 +57,65 @@ export default function Header() {
             to="/"
             className={classes.title}
           >
-            <RestaurantIcon className={classes.icon} />
+            {/* <RestaurantIcon className={classes.icon} /> */}
             <Typography
               variant="h6"
               color="inherit"
               className={classes.title}
               noWrap
             >
-              Restaurants
+              Rentzz
             </Typography>
           </Button>
 
-          
-
-          {userContext.userInfo ? (
-            <Typography
-              variant="h6"
-              color="inherit"
-              className={classes.title}
-              noWrap
-            >
-              {userContext.userInfo.name}
-            </Typography>
-          ) : null}
-
-{userContext.userInfo && userContext.userInfo.role == "admin" ? (
-            <Button component={RouterLink} color="inherit" to="/users">
-              userList
-            </Button>
-          ) : null}
-
-          {!userContext.isAuthenticated ? (
-            <ButtonGroup color="inherit" aria-label="text primary button group">
-              <Button component={RouterLink} to="/login">
-                Login
+          {userContext.isAuthenticated && userContext.userInfo ? (
+            <React.Fragment>
+              <Button
+                color="inherit"
+                aria-controls="simple-menu"
+                aria-haspopup="true"
+                onClick={handleClick}
+              >
+                {userContext.userInfo.name}
               </Button>
-              <Button component={RouterLink} to="/register">
-                Register
-              </Button>
-            </ButtonGroup>
-          ) : (
-            <Button
-              color="inherit"
-              onClick={() => {
-                userContext.deleteDataInLocalStorage();
-              }}
-            >
-              Logout
-            </Button>
-          )}
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem>{userContext.userInfo.role}</MenuItem>
+                <MenuItem onClick={handleClose}>My account</MenuItem>
+
+                {userContext.userInfo &&
+                userContext.userInfo.role == "admin" ? (
+                  <MenuItem component={RouterLink} color="inherit" to="/users">
+                    Users List
+                  </MenuItem>
+                ) : null}
+
+                {userContext.userInfo &&
+                (userContext.userInfo.role == "admin" ||
+                  userContext.userInfo.role == "realtor") ? (
+                  <MenuItem
+                    component={RouterLink}
+                    color="inherit"
+                    to="/create-apartment"
+                  >
+                    Create Apartment
+                  </MenuItem>
+                ) : null}
+                <MenuItem
+                  onClick={() => {
+                    userContext.deleteDataInLocalStorage();
+                  }}
+                >
+                  Logout
+                </MenuItem>
+              </Menu>
+            </React.Fragment>
+          ) : null}
         </Toolbar>
       </AppBar>
     </div>

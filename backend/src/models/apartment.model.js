@@ -1,3 +1,4 @@
+const { boolean } = require("joi");
 const mongoose = require("mongoose");
 const { toJSON, paginate } = require("./plugins");
 
@@ -32,9 +33,22 @@ const apartmentSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    price: {
+      type: Number,
+      default: 0.0,
+    },
     realtor: {
       type: Object,
       default: null,
+    },
+    realtorId: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    isRented: {
+      type: Boolean,
+      default: false,
     },
   },
   {
