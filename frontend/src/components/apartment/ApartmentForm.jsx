@@ -15,6 +15,7 @@ import { TextField } from "formik-material-ui";
 import { useHistory } from "react-router-dom";
 import { UserContext } from "../../UserProvider";
 import MessageCard from "../MessageCard";
+import GeoLocation from "../GeoLocation";
 import axios from "axios";
 import * as Yup from "yup";
 
@@ -35,6 +36,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const center = {
+  lat: 13.04,
+  lng: 77.5,
+};
+
 export default function ApartmentForm() {
   const userContext = useContext(UserContext);
   const classes = useStyles();
@@ -42,8 +48,15 @@ export default function ApartmentForm() {
   const [message, setMessage] = useState(null);
   const [level, setLevel] = useState("primary");
 
+  const [markers, setMarkers] = React.useState([
+    {
+      lat: center.lat,
+      lng: center.lng,
+    },
+  ]);
+
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="md">
       <div className={classes.paper}>
         {message ? (
           <MessageCard
@@ -87,6 +100,12 @@ export default function ApartmentForm() {
               try {
                 setMessage(null);
                 values.realtorId = userContext.userInfo.id;
+                values.lng = markers[0].lng;
+                values.lat = markers[0].lat;
+
+                console.log('====================================');
+                console.log(markers[0], values);
+                console.log('====================================');
                 let response = await axios.post("/apartments", values);
                 if (response && response.data) {
                   if (response.data.id) {
@@ -170,6 +189,14 @@ export default function ApartmentForm() {
                   rows={5}
                   name="description"
                   variant="outlined"
+                />
+                <br />
+                <br />
+
+                <GeoLocation
+                  markers={markers}
+                  setMarkers={setMarkers}
+                  center={center}
                 />
 
                 <br />

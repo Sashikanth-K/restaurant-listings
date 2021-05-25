@@ -11,10 +11,16 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { RadioGroup } from "formik-material-ui";
 import { Formik, Form, Field } from "formik";
-import { TextField } from "formik-material-ui";
+import { TextField, Select } from "formik-material-ui";
+
+import MenuItem from "@material-ui/core/MenuItem";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+
 import { useHistory } from "react-router-dom";
 import { UserContext } from "../../UserProvider";
 import MessageCard from "../MessageCard";
+import GeoLocation from "../GeoLocation";
 import axios from "axios";
 import * as Yup from "yup";
 
@@ -33,6 +39,10 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 240,
+  },
 }));
 
 export default function ApartmentEditForm(props) {
@@ -42,8 +52,20 @@ export default function ApartmentEditForm(props) {
   const [message, setMessage] = useState(null);
   const [level, setLevel] = useState("primary");
 
+  const [markers, setMarkers] = React.useState([
+    {
+      lat: props.data.location.coordinates[1],
+      lng: props.data.location.coordinates[0],
+    },
+  ]);
+
+  const center = {
+    lat: props.data.location.coordinates[1],
+    lng: props.data.location.coordinates[0],
+  };
+
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="md">
       <div className={classes.paper}>
         {message ? (
           <MessageCard
@@ -65,7 +87,7 @@ export default function ApartmentEditForm(props) {
               floorArea: props.data.floorArea,
               numberOfRooms: props.data.numberOfRooms,
               price: props.data.price,
-              //realtorId : "",
+              isRented: props.data.isRented,
             }}
             validationSchema={Yup.object({
               name: Yup.string()
@@ -87,6 +109,8 @@ export default function ApartmentEditForm(props) {
               try {
                 setMessage(null);
                 values.realtorId = userContext.userInfo.id;
+                values.lng = markers[0].lng;
+                values.lat = markers[0].lat;
                 let response = await axios.patch(
                   `/apartments/${props.data.id}`,
                   values
@@ -168,6 +192,53 @@ export default function ApartmentEditForm(props) {
                 />
                 <br />
                 <br />
+                <FormControl className={classes.formControl}>
+                  <InputLabel
+                    shrink
+                    id="demo-simple-select-placeholder-label-label"
+                  >
+                    {" "}
+                    Rented status
+                  </InputLabel>
+                  <Field
+                    labelId="demo-simple-select-placeholder-label-label"
+                    id="demo-simple-select-placeholder-label"
+                    fullWidth
+                    component={Select}
+                    variant="outlined"
+                    name="isRented"
+                    // inputProps={{
+                    //   id: "age-simple",
+                    // }}
+                  >
+                    <MenuItem value={true}>Rented</MenuItem>
+                    <MenuItem value={false}>Not Rented</MenuItem>
+                  </Field>
+                </FormControl>
+
+                {/* <Field component={RadioGroup} name="isRented">
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    component="p"
+                  >
+                    Availablity :
+                  </Typography>
+                  <FormControlLabel
+                    value={true}
+                    control={<Radio disabled={isSubmitting} />}
+                    label="Rented"
+                    disabled={isSubmitting}
+                  />
+                  <FormControlLabel
+                    value={false}
+                    control={<Radio disabled={isSubmitting} />}
+                    label="Not Rented"
+                    disabled={isSubmitting}
+                  />
+                </Field> */}
+                <br />
+                <br />
                 <Field
                   component={TextField}
                   label="Description"
@@ -177,12 +248,17 @@ export default function ApartmentEditForm(props) {
                   name="description"
                   variant="outlined"
                 />
-
+                <br />
+                <br />
+                <GeoLocation
+                  markers={markers}
+                  setMarkers={setMarkers}
+                  center={center}
+                />
                 <br />
                 {isSubmitting && <LinearProgress />}
                 <br />
                 <br />
-
                 <Button
                   variant="contained"
                   color="primary"

@@ -1,6 +1,7 @@
 import { Grid, Button, LinearProgress, Paper } from "@material-ui/core";
 import React, { Component, useContext, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import Chip from "@material-ui/core/Chip";
 
 import { Formik, Form, Field } from "formik";
 import { TextField } from "formik-material-ui";
@@ -19,6 +20,7 @@ import {
 } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import StarIcon from "@material-ui/icons/Star";
+import GeoLocationView from "../GeoLocationView";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,16 +33,23 @@ const useStyles = makeStyles((theme) => ({
 
 const ApartmentDetails = (props) => {
   const classes = useStyles();
+
+  const [markers, setMarkers] = React.useState([
+    {
+      lat: props.data.location.coordinates[1],
+      lng: props.data.location.coordinates[0],
+    },
+  ]);
+
+  const center = {
+    lat: props.data.location.coordinates[1],
+    lng: props.data.location.coordinates[0],
+  };
+
   return (
-    <Grid
-      container
-      direction="column"
-      //   justify="space-between"
-      //   alignItems="center"
-      spacing={3}
-    >
+    <Grid container direction="column" spacing={3}>
       <Grid item>
-        <Grid container  spacing={3}>
+        <Grid container spacing={3}>
           <Grid item xs={6}>
             <Typography variant="h5" color="textSecondary">
               Name : {props.data.name}
@@ -57,6 +66,32 @@ const ApartmentDetails = (props) => {
             <Typography variant="body1" color="textSecondary">
               {new Date(props.data.createdAt).toDateString()}
             </Typography>
+
+            <br />
+            <br />
+
+            <Grid item>
+              <Grid container direction="column">
+                <Typography variant="body1" color="textSecondary">
+                  Associated Realtor --
+                </Typography>
+                <Typography variant="body1" color="textSecondary">
+                  Name : {props.data.realtor.name}
+                </Typography>
+                <Typography variant="body1" color="textSecondary">
+                  Email : {props.data.realtor.email}
+                </Typography>
+              </Grid>
+            </Grid>
+            <br />
+            <br />
+            <Chip
+              label={"Availablity: " + props.data.isRented}
+              disabled
+              variant="outlined"
+              size="small"
+              color={props.data.isRented ? "primary" : "secondary"}
+            />
           </Grid>
           <Grid item xs={6}>
             <Typography variant="body1" color="textSecondary">
@@ -66,7 +101,15 @@ const ApartmentDetails = (props) => {
         </Grid>
       </Grid>
       <Grid item>
-          Map
+        <GeoLocationView
+          markers={[
+            {
+              lat: props.data.location.coordinates[1],
+              lng: props.data.location.coordinates[0],
+            },
+          ]}
+          center={center}
+        />
       </Grid>
     </Grid>
   );
