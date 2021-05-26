@@ -13,7 +13,7 @@ const userOne = {
   email: faker.internet.email().toLowerCase(),
   password,
   role: "user",
-  isEmailVerified: false,
+  isEmailVerified: true,
 };
 
 const userTwo = {
@@ -22,7 +22,25 @@ const userTwo = {
   email: faker.internet.email().toLowerCase(),
   password,
   role: "user",
-  isEmailVerified: false,
+  isEmailVerified: true,
+};
+
+const realtorOne = {
+  _id: mongoose.Types.ObjectId(),
+  name: faker.name.findName(),
+  email: faker.internet.email().toLowerCase(),
+  password,
+  role: "realtor",
+  isEmailVerified: true,
+};
+
+const realtorTwo = {
+  _id: mongoose.Types.ObjectId(),
+  name: faker.name.findName(),
+  email: faker.internet.email().toLowerCase(),
+  password,
+  role: "realtor",
+  isEmailVerified: true,
 };
 
 const admin = {
@@ -31,7 +49,7 @@ const admin = {
   email: faker.internet.email().toLowerCase(),
   password,
   role: "admin",
-  isEmailVerified: false,
+  isEmailVerified: true,
 };
 
 const insertUsers = async (users) => {
@@ -45,4 +63,6 @@ module.exports = {
   userTwo,
   admin,
   insertUsers,
+  realtorTwo,
+  realtorOne,
 };

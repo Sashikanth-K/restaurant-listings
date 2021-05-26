@@ -1,6 +1,6 @@
 const dotenv = require("dotenv");
 const Joi = require("joi");
-const path = require('path');
+const path = require("path");
 
 dotenv.config({ path: path.join(__dirname, "../../.env") });
 
@@ -35,7 +35,7 @@ module.exports = {
   port: envVars.PORT,
   frontEndHost: envVars.FRONT_END_HOST,
   mongoose: {
-    url: envVars.MONGODB_URL ,
+    url: envVars.MONGODB_URL + (envVars.NODE_ENV === "test" ? "-test" : ""),
     options: {
       useCreateIndex: true,
       useNewUrlParser: true,

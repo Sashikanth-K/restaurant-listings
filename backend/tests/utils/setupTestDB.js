@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const config = require('../../src/config/config');
 
-// console.log('====================================');
-// console.log(config);
-// console.log('====================================');
+
 
 const setupTestDB = () => {
   beforeAll(async () => {

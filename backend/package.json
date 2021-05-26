@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "start": "cross-env NODE_ENV=development nodemon src/index.js",
-    "test": "jest -i --colors --verbose --detectOpenHandles",
-    "test:watch": "jest -i --watchAll",
-    "coverage": "jest -i --coverage",
-    "coverage:coveralls": "jest -i --coverage --coverageReporters=text-lcov | coveralls"
+    "test": "jest -i --colors --verbose --forceExit",
+    "test:watch": "jest -i --watchAll --forceExit",
+    "coverage": "jest -i --coverage --forceExit"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -44,6 +43,7 @@
     "node-mocks-http": "^1.10.1",
     "nodemon": "^2.0.7",
     "prettier": "^2.3.0",
-    "supertest": "^6.1.3"
+    "supertest": "^6.1.3",
+    "supertest-session": "^4.1.0"
   }
 }
