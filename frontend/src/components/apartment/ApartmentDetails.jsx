@@ -86,13 +86,14 @@ const ApartmentDetails = (props) => {
             <br />
             <br />
             <Chip
-              label={"Availablity: " + props.data.isRented}
-              disabled
-              variant="outlined"
-              size="small"
-              color={props.data.isRented ? "primary" : "secondary"}
-            />
+                label={"Availablity: " + (props.data.isRented ? "No" : "Yes")}
+                disabled
+                variant="outlined"
+                size="small"
+                color={!props.data.isRented ? "primary" : "secondary"}
+              />
           </Grid>
+          
           <Grid item xs={6}>
             <Typography variant="body1" color="textSecondary">
               {props.data.description}

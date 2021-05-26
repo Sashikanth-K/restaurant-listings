@@ -5,6 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import StarIcon from "@material-ui/icons/Star";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import Chip from "@material-ui/core/Chip";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,20 +36,28 @@ const ApartmentCard = (props) => {
               </Typography>
             </Grid>
           </Grid>
+          <br />
+          
 
           <Grid item>
             <Grid container justify="space-evenly">
               <Typography variant="subtitle1" color="textSecondary">
-                {props.data.numberOfRooms}
+                # of rooms : {props.data.numberOfRooms}
               </Typography>
               <Typography variant="subtitle1" color="textSecondary">
-                {props.data.floorArea}
+                Area : {props.data.floorArea} sqft
               </Typography>
-              <Typography variant="subtitle1" color="textSecondary">
-                {props.data.name}
-              </Typography>
+              <Chip
+                label={"Availablity: " + (props.data.isRented ? "No" : "Yes")}
+                disabled
+                variant="outlined"
+                size="small"
+                color={!props.data.isRented ? "primary" : "secondary"}
+              />
             </Grid>
           </Grid>
+          <br />
+          <br />
 
           <Grid item>
             <Grid container>
