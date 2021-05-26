@@ -118,7 +118,10 @@ const deleteApartment = async (req, res, next) => {
       req.params.apartmentId,
       req.user
     );
-    res.status(httpStatus.NO_CONTENT).send();
+    res.status(httpStatus.NO_CONTENT).send({
+      code : 200,
+      message : "Successfully deleted"
+    });
   } catch (error) {
     next(error);
   }
