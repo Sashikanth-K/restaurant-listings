@@ -1,5 +1,6 @@
 const httpStatus = require("http-status");
 const logger = require("../config/logger");
+const ApiError = require("../utils/ApiError");
 
 const {
   authService,
@@ -10,6 +11,10 @@ const {
 
 const register = async (req, res, next) => {
   try {
+
+    if(req.body.role === "admin"){
+      throw new ApiError(httpStatus.UNAUTHORIZED, "Access denied. Cannot register as Admin")
+    }
     const user = await userService.createUser(req.body);
     const verifyEmailToken = await tokenService.generateVerifyEmailToken(user);
     await emailService.sendVerificationEmail(user.email, verifyEmailToken);
