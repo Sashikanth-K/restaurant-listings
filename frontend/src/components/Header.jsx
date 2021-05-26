@@ -9,6 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import axios from "axios";
 
 import RestaurantIcon from "@material-ui/icons/Restaurant";
 import {
@@ -45,6 +46,13 @@ export default function Header() {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogOut = async () => {
+    try {
+      let res = await axios.get("/auth/logout");
+      userContext.deleteDataInLocalStorage();
+    } catch (error) {}
   };
 
   return (
@@ -108,7 +116,7 @@ export default function Header() {
                 ) : null}
                 <MenuItem
                   onClick={() => {
-                    userContext.deleteDataInLocalStorage();
+                    handleLogOut();
                   }}
                 >
                   Logout

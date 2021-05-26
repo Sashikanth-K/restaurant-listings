@@ -31,7 +31,8 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   try {
-    await authService.logout(req.body.refreshToken);
+    req.logout();
+    //await authService.logout(req.body.refreshToken);
     res.status(httpStatus.NO_CONTENT).send();
   } catch (error) {
     logger.error(error);
@@ -58,8 +59,8 @@ const verifyEmail = async (req, res, next) => {
   try {
     await authService.verifyEmail(req.query.token);
     res.status(httpStatus.OK).send({
-      code : 200,
-      message : "Email Verified. Now you can login into your account."
+      code: 200,
+      message: "Email Verified. Now you can login into your account.",
     });
   } catch (error) {
     logger.error(error);

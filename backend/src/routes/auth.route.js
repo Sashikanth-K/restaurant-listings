@@ -18,7 +18,7 @@ router.post(
   passport.authenticate("local.login"),
   authController.login
 );
-router.post("/logout", validate(authValidation.logout), authController.logout);
+router.get("/logout", authController.logout);
 router.get(
   "/send-verification-email",
   validate(authValidation.sendEmailVerification),
