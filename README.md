@@ -4,8 +4,8 @@
 ## Quick Start
 
 ```
-git clone https://git.toptal.com/screening/Sashi-Kanth.git
-cd Sashi-Kanth
+https://github.com/Sashikanth-K/restaurant-listings.git
+cd restaurant-listings
 cd backend
 npm install 
 npm start
